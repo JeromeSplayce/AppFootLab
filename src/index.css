@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-main: #0f172a;        /* Slate 900 */
+  --color-sidebar: #1e293b;     /* Slate 800 */
+  --color-card: #334155;        /* Slate 700 */
+  --color-primary: #06b6d4;     /* Cyan 500 */
+  --color-pawn-attack: #10b981;  /* Vert */
+  --color-pawn-defense: #f43f5e; /* Rouge */
+}
+
+body {
+  background-color: var(--color-main);
+  color: #f8fafc;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
