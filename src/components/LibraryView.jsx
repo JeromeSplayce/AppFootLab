@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { Download, Trash2, Upload } from 'lucide-react';
+import { Copy, Download, Pencil, Trash2, Upload } from 'lucide-react';
 import Pitch from './Pitch';
 
-export default function LibraryView({ exercises, onDelete, onImport }) {
+export default function LibraryView({ exercises, onDelete, onImport, onEdit, onDuplicate }) {
   const [selectedId, setSelectedId] = useState(exercises[0]?.id ?? null);
   const importInputRef = useRef(null);
 
@@ -135,7 +135,7 @@ export default function LibraryView({ exercises, onDelete, onImport }) {
           </h3>
 
           <p className="text-slate-400 text-sm max-w-sm">
-            Ta bibliothèque est vide. Clique sur « Nouvel exercice » dans le
+            Ta liste d'exercice est vide. Clique sur « Nouvel exercice » dans le
             menu à gauche pour créer ton tout premier schéma tactique, ou importe
             une sauvegarde JSON.
           </p>
@@ -148,7 +148,7 @@ export default function LibraryView({ exercises, onDelete, onImport }) {
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-xl font-bold tracking-wider uppercase text-slate-100">
-          Bibliothèque
+          Mes exercices
         </h2>
 
         <div className="flex items-center gap-2">
@@ -229,6 +229,24 @@ export default function LibraryView({ exercises, onDelete, onImport }) {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => onEdit(selectedExercise)}
+                title="Modifier cet exercice"
+                className="p-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400"
+              >
+                <Pencil size={17} />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onDuplicate(selectedExercise)}
+                title="Dupliquer cet exercice"
+                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200"
+              >
+                <Copy size={17} />
+              </button>
+
               <button
                 type="button"
                 onClick={handleExportSelected}

@@ -11,20 +11,20 @@ import {
   Redo2,
   Trash2,
 } from 'lucide-react';
-export default function CreateExerciseView({ onSave }) {
-  const [pitchType, setPitchType] = useState('full');
+export default function CreateExerciseView({ onSave, exerciseToEdit = null }) {
+  const [pitchType, setPitchType] = useState(exerciseToEdit?.pitchType || 'full');
   const [activeColor, setActiveColor] = useState('yellow');
-  const [positions, setPositions] = useState([]);
+  const [positions, setPositions] = useState(exerciseToEdit?.positions || []);
   const [history, setHistory] = useState([]);
   const [showMoreEquipment, setShowMoreEquipment] = useState(false);
   // Formulaire d'exercice
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('Technique');
-  const [intensity, setIntensity] = useState('Moyenne');
-  const [duration, setDuration] = useState('15');
-  const [playersCount, setPlayersCount] = useState('8');
-  const [description, setDescription] = useState('');
-  const [objectives, setObjectives] = useState('');
+  const [title, setTitle] = useState(exerciseToEdit?.title || '');
+  const [category, setCategory] = useState(exerciseToEdit?.category || 'Technique');
+  const [intensity, setIntensity] = useState(exerciseToEdit?.intensity || 'Moyenne');
+  const [duration, setDuration] = useState(exerciseToEdit?.duration?.toString() || '15');
+  const [playersCount, setPlayersCount] = useState(exerciseToEdit?.playersCount?.toString() || '8');
+  const [description, setDescription] = useState(exerciseToEdit?.description || '');
+  const [objectives, setObjectives] = useState(exerciseToEdit?.objectives || '');
   const colors = [
     { id: 'red', hex: '#ef4444', name: 'Rouge' },
     { id: 'blue', hex: '#3b82f6', name: 'Bleu' },
@@ -108,7 +108,7 @@ export default function CreateExerciseView({ onSave }) {
     }
 
     const newExercise = {
-      id: Date.now().toString(),
+      id: exerciseToEdit?.id || Date.now().toString(),
       title: cleanTitle,
       category,
       intensity,
@@ -118,7 +118,8 @@ export default function CreateExerciseView({ onSave }) {
       objectives: objectives.trim(),
       pitchType,
       positions,
-      createdAt: new Date().toISOString(),
+      createdAt: exerciseToEdit?.createdAt || new Date().toISOString(),
+      updatedAt: exerciseToEdit ? new Date().toISOString() : undefined,
     };
 
     onSave(newExercise);
@@ -137,7 +138,7 @@ export default function CreateExerciseView({ onSave }) {
           onClick={handleSaveExercise}
           className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
         >
-          Enregistrer l'exercice
+          {exerciseToEdit ? 'Enregistrer les modifications' : "Enregistrer l'exercice"}
         </button>
       </div>
       {/* BLOC CENTRAL */}
