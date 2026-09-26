@@ -4,8 +4,10 @@ import {
   Copy,
   Dumbbell,
   Pencil,
+  Printer,
   Trash2,
 } from 'lucide-react';
+import SessionPrintDocument from './SessionPrintDocument';
 
 export default function SessionLibraryView({
   sessions,
@@ -58,6 +60,10 @@ export default function SessionLibraryView({
     return total + (Number.isNaN(duration) ? 0 : duration);
   }, 0);
 
+  const handlePrintSession = () => {
+    window.print();
+  };
+
   const handleDelete = (session) => {
     const confirmed = window.confirm(
       `Supprimer définitivement "${session.title || 'cette séance'}" ?`
@@ -86,7 +92,8 @@ export default function SessionLibraryView({
   }
 
   return (
-    <div className="grid grid-cols-12 gap-6 h-full">
+    <>
+      <div className="footlab-screen-view grid grid-cols-12 gap-6 h-full">
       <div className="col-span-4 space-y-4">
         <h2 className="text-xl font-bold tracking-wider uppercase text-slate-100">
           Mes séances
@@ -155,6 +162,16 @@ export default function SessionLibraryView({
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={handlePrintSession}
+              title="Exporter la séance en PDF"
+              className="px-3 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 flex items-center gap-2 text-xs font-semibold"
+            >
+              <Printer size={17} />
+              Exporter PDF
+            </button>
+
             <button
               type="button"
               onClick={() => onEdit(selectedSession)}
@@ -270,6 +287,13 @@ export default function SessionLibraryView({
           })}
         </div>
       </div>
-    </div>
+      </div>
+
+      <SessionPrintDocument
+        session={selectedSession}
+        sessionItems={sessionItems}
+        totalDuration={totalDuration}
+      />
+    </>
   );
 }
