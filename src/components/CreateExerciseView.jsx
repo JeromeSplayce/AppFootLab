@@ -4,7 +4,6 @@ import {
   Plus,
   ArrowRight,
   MoveRight,
-  CornerUpRight,
   Layers,
   ChevronDown,
   ChevronUp,
@@ -12,14 +11,12 @@ import {
   Redo2,
   Trash2,
 } from 'lucide-react';
-
-export default function CreateExerciseView() {
+export default function CreateExerciseView({ onSave }) {
   const [pitchType, setPitchType] = useState('full');
   const [activeColor, setActiveColor] = useState('yellow');
   const [positions, setPositions] = useState([]);
   const [history, setHistory] = useState([]);
   const [showMoreEquipment, setShowMoreEquipment] = useState(false);
-
   // Formulaire d'exercice
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('Technique');
@@ -28,19 +25,16 @@ export default function CreateExerciseView() {
   const [playersCount, setPlayersCount] = useState('8');
   const [description, setDescription] = useState('');
   const [objectives, setObjectives] = useState('');
-
   const colors = [
     { id: 'red', hex: '#ef4444', name: 'Rouge' },
     { id: 'blue', hex: '#3b82f6', name: 'Bleu' },
     { id: 'yellow', hex: '#eab308', name: 'Jaune' },
     { id: 'green', hex: '#22c55e', name: 'Vert' },
   ];
-
   const updatePositionsWithHistory = (newPositions) => {
     setPositions(newPositions);
     setHistory([]);
   };
-
   const handleAddPlayer = () => {
     const selectedColorObj = colors.find((c) => c.id === activeColor) || colors[0];
     const newPlayer = {
@@ -53,7 +47,6 @@ export default function CreateExerciseView() {
     };
     updatePositionsWithHistory([...positions, newPlayer]);
   };
-
   const handleAddEquipment = (type) => {
     const newEquipment = {
       id: Date.now().toString(),
@@ -64,7 +57,6 @@ export default function CreateExerciseView() {
     };
     updatePositionsWithHistory([...positions, newEquipment]);
   };
-
   const handleAddArrow = (e, isDashed = false, makeCurved = false) => {
     if (e && e.preventDefault) e.preventDefault();
     const activeColorObj = colors.find((c) => c.id === activeColor) || colors[0];
@@ -72,10 +64,8 @@ export default function CreateExerciseView() {
     const startY = 50;
     const endX = 60;
     const endY = 50;
-
     const controlX = (startX + endX) / 2;
     const controlY = makeCurved ? startY - 12 : (startY + endY) / 2;
-
     const newArrow = {
       id: Date.now().toString(),
       kind: 'arrow',
@@ -88,30 +78,50 @@ export default function CreateExerciseView() {
       isDashed,
       color: activeColorObj.hex,
     };
-
     updatePositionsWithHistory([...positions, newArrow]);
   };
-
   const handleUndo = () => {
     if (positions.length === 0) return;
     const lastItem = positions[positions.length - 1];
     setHistory((prev) => [...prev, lastItem]);
     setPositions((prev) => prev.slice(0, -1));
   };
-
   const handleRedo = () => {
     if (history.length === 0) return;
     const itemToRestore = history[history.length - 1];
     setPositions((prev) => [...prev, itemToRestore]);
     setHistory((prev) => prev.slice(0, -1));
   };
-
   const handleClearAll = () => {
     if (positions.length === 0) return;
     if (window.confirm('Voulez-vous vraiment effacer tous les éléments du terrain ?')) {
       setHistory((prev) => [...prev, ...positions]);
       setPositions([]);
     }
+  };
+  const handleSaveExercise = () => {
+    const cleanTitle = title.trim();
+
+    if (!cleanTitle) {
+      window.alert("Donne un titre à l'exercice avant de l'enregistrer.");
+      return;
+    }
+
+    const newExercise = {
+      id: Date.now().toString(),
+      title: cleanTitle,
+      category,
+      intensity,
+      duration,
+      playersCount,
+      description: description.trim(),
+      objectives: objectives.trim(),
+      pitchType,
+      positions,
+      createdAt: new Date().toISOString(),
+    };
+
+    onSave(newExercise);
   };
 
   return (
@@ -124,12 +134,12 @@ export default function CreateExerciseView() {
         </div>
         <button
           type="button"
+          onClick={handleSaveExercise}
           className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all cursor-pointer"
         >
           Enregistrer l'exercice
         </button>
       </div>
-
       {/* BLOC CENTRAL */}
       <div className="space-y-3 max-w-[900px] mx-auto">
         <div className="bg-[#111c24] border border-slate-800 rounded-xl p-3 space-y-3 shadow-md">
@@ -150,7 +160,6 @@ export default function CreateExerciseView() {
                   title={c.name}
                 />
               ))}
-
               <button
                 type="button"
                 onClick={handleAddPlayer}
@@ -159,7 +168,6 @@ export default function CreateExerciseView() {
                 <Plus size={14} /> Joueur
               </button>
             </div>
-
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1 border-r border-slate-800 pr-2 mr-1">
                 <button
@@ -190,7 +198,6 @@ export default function CreateExerciseView() {
                   <Trash2 size={16} />
                 </button>
               </div>
-
               <div className="flex items-center bg-[#0b1319] p-1 rounded-lg border border-slate-800 text-xs">
                 <button
                   type="button"
@@ -213,12 +220,10 @@ export default function CreateExerciseView() {
               </div>
             </div>
           </div>
-
           {/* Ligne 2 : Équipements + Flèches */}
           <div className="flex items-center justify-between gap-2 text-xs border-t border-slate-800/80 pt-2.5">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-slate-400 font-medium hidden sm:inline mr-1">MATÉRIEL :</span>
-
               <button
                 type="button"
                 onClick={() => handleAddEquipment('ball')}
@@ -226,7 +231,6 @@ export default function CreateExerciseView() {
               >
                 ⚽ Ballon
               </button>
-
               <button
                 type="button"
                 onClick={() => handleAddEquipment('cone')}
@@ -234,7 +238,6 @@ export default function CreateExerciseView() {
               >
                 🔶 Cône
               </button>
-
               <button
                 type="button"
                 onClick={() => handleAddEquipment('saucer')}
@@ -242,7 +245,6 @@ export default function CreateExerciseView() {
               >
                 🟡 Coupelle
               </button>
-
               <button
                 type="button"
                 onClick={() => handleAddEquipment('goal')}
@@ -250,7 +252,6 @@ export default function CreateExerciseView() {
               >
                 🥅 Mini But
               </button>
-
               <button
                 type="button"
                 onClick={() => setShowMoreEquipment(!showMoreEquipment)}
@@ -263,7 +264,6 @@ export default function CreateExerciseView() {
                 )}
               </button>
             </div>
-
             {/* BOUTONS FLÈCHES */}
             <div className="flex items-center gap-1 border-l border-slate-700 pl-2 ml-1 shrink-0">
               <button
@@ -274,7 +274,6 @@ export default function CreateExerciseView() {
               >
                 <ArrowRight size={14} />
               </button>
-
               <button
                 type="button"
                 onClick={(e) => handleAddArrow(e, true, false)}
@@ -285,7 +284,6 @@ export default function CreateExerciseView() {
               </button>
             </div>
           </div>
-
           {/* Ligne 3 (Dépliée) */}
           {showMoreEquipment && (
             <div className="flex items-center gap-1.5 flex-wrap text-xs pt-1 border-t border-slate-800/50">
@@ -334,7 +332,6 @@ export default function CreateExerciseView() {
             </div>
           )}
         </div>
-
         <PitchEditor
           positions={positions}
           pitchType={pitchType}
@@ -342,13 +339,11 @@ export default function CreateExerciseView() {
           updatePositions={updatePositionsWithHistory}
         />
       </div>
-
       {/* FORMULAIRE D'INFORMATIONS */}
       <div className="bg-[#111c24] border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
         <h2 className="text-lg font-semibold text-white border-b border-slate-800 pb-3 flex items-center gap-2">
           <Layers size={18} className="text-emerald-400" /> Informations de l'exercice
         </h2>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2 space-y-1">
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Titre de l'exercice</label>
@@ -360,7 +355,6 @@ export default function CreateExerciseView() {
               className="w-full bg-[#0b1319] border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
             />
           </div>
-
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Catégorie</label>
             <select
@@ -374,7 +368,6 @@ export default function CreateExerciseView() {
               <option value="Psychomotricité">Psychomotricité</option>
             </select>
           </div>
-
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Intensité</label>
             <select
@@ -387,7 +380,6 @@ export default function CreateExerciseView() {
               <option value="Élevée">Élevée</option>
             </select>
           </div>
-
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Durée (min)</label>
             <input
@@ -397,7 +389,6 @@ export default function CreateExerciseView() {
               className="w-full bg-[#0b1319] border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
             />
           </div>
-
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Nombre de Joueurs</label>
             <input
@@ -407,7 +398,6 @@ export default function CreateExerciseView() {
               className="w-full bg-[#0b1319] border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 transition-colors"
             />
           </div>
-
           <div className="space-y-1 md:col-span-2">
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Description & Consignes</label>
             <textarea
@@ -418,7 +408,6 @@ export default function CreateExerciseView() {
               className="w-full bg-[#0b1319] border border-slate-800 rounded-xl p-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none"
             />
           </div>
-
           <div className="space-y-1 md:col-span-2">
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">Objectifs</label>
             <textarea
