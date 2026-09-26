@@ -283,15 +283,6 @@ export default function CreateExerciseView() {
               >
                 <MoveRight size={14} />
               </button>
-
-              <button
-                type="button"
-                onClick={(e) => handleAddArrow(e, true, true)}
-                title="Course (Arrondie)"
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 transition-all cursor-pointer"
-              >
-                <CornerUpRight size={14} />
-              </button>
             </div>
           </div>
 
